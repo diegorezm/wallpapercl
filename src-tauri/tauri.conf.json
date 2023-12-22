@@ -11,6 +11,19 @@
   },
   "tauri": {
     "allowlist": {
+       "dialog": {
+        "all": false,
+        "ask": false,
+        "confirm": false,
+        "message": false,
+        "open": true,
+        "save": true
+      },
+      "protocol": {
+        "all": false,
+        "asset": true,
+        "assetScope": ["**"]
+      },
       "all": false,
       "shell": {
         "all": false,
@@ -20,7 +33,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "com.wallpapercl.dev",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
