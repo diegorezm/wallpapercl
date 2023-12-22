@@ -7,5 +7,6 @@ export interface ImageInterface {
 export interface ImageQuery {
   images: ImageInterface[],
   filtered: ImageInterface[],
+  defaultDir: string,
   search: string
 }

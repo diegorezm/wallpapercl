@@ -15,7 +15,6 @@ export const getImagesFromDirectory: GetImagesFromDirectory = async (path) => {
       file_path: string,
       file_name: string
     }
-    const currentTime = Math.floor(Date.now() / 1000);
     const images: ImageInterface[] = [];
     const paths = (await invoke("list_dir", {
       dirPath: path,
@@ -29,7 +28,7 @@ export const getImagesFromDirectory: GetImagesFromDirectory = async (path) => {
       images.push(image);
     });
 
-    const jsonData = { images, cachetime: currentTime, images_directory: path };
+    const jsonData = { images, images_directory: path };
     localStorage.setItem("images", JSON.stringify(jsonData));
     return images;
   } catch (error) {
@@ -40,26 +39,20 @@ export const getImagesFromDirectory: GetImagesFromDirectory = async (path) => {
 
 type GetCachedData = () => Promise<ImageInterface[]>;
 export const getCachedData: GetCachedData = async () => {
-
-  const currentTime = Math.floor(Date.now() / 1000);
-  const cacheLife = 60 * 60 * 24;
   const cacheData = localStorage.getItem("images");
-
   if (cacheData) {
     const data: CacheData = JSON.parse(cacheData);
-    const expired = currentTime - data.cachetime > cacheLife;
-    if (!expired) {
-      return data.images;
-    }
+    return data.images;
   }
-  const directory = await getStoredPath();
+  const directory = getStoredPath();
   if (directory) {
     return await getImagesFromDirectory(directory);
   }
   return [];
 };
 
-export const getStoredPath = () => {
+type GetStoredPath = () => string
+export const getStoredPath: GetStoredPath = () => {
   const cacheData = localStorage.getItem("images");
   if (cacheData) {
     const data: CacheData = JSON.parse(cacheData);
@@ -68,10 +61,11 @@ export const getStoredPath = () => {
   return "";
 };
 
-type SearchHandler = (data: ImageQuery) => void
+type SearchHandler = (data: ImageQuery) => ImageInterface[]
 export const searchHandler: SearchHandler = (data: ImageQuery) => {
   const searchTerm = data.search.toLowerCase() || "";
   data.filtered = data.images.filter((item) => {
     return item.fileName.toLowerCase().includes(searchTerm);
   });
+  return data.filtered;
 };
