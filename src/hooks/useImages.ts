@@ -21,6 +21,6 @@ export const useImages = () => {
     getImageQuery(); 
   }, []); 
 
-  return imageQuery;
+  return {imageQuery, setImageQuery};
 };
 
