@@ -50,8 +50,8 @@
         "fullscreen": false,
         "resizable": true,
         "title": "wallpapercl",
-        "width": 800,
-        "height": 600
+        "width": 1024,
+        "height": 824
       }
     ]
   }

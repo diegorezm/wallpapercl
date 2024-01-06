@@ -4,6 +4,67 @@ use std::fs;
 use std::path::{PathBuf, Path};
 use std::process::Command;
 use serde::{Serialize, Deserialize};
+use reqwest;
+
+#[derive(Serialize,Deserialize,Debug)]
+struct APIResponse {
+    id: String,
+    path: String,
+}
+#[derive(Serialize,Deserialize,Debug)]
+struct Data {
+    data: Vec<APIResponse>
+}
+#[derive(Serialize,Deserialize,Debug)]
+struct Error {
+    error: String,
+    message: String
+}
+
+
+#[tauri::command]
+async fn get_wallpaper_api() -> Result<Data, Error> {
+    let response = reqwest::get("https://wallhaven.cc/api/v1/search?sorting=toplist").await;
+    match response {
+        Ok(response) if response.status().is_success() => {
+            let body = response.text().await;
+            match body {
+                Ok(body) => {
+                    match serde_json::from_str::<Data>(&body) {
+                        Ok(parsed) => {
+                            Ok(parsed)
+                        }
+                        Err(err) => {
+                            let error = Error {
+                                error: err.to_string(),
+                                message: "There was a problem while trying to parse server response!".to_string()
+                            };
+                            Err(error)
+                        }
+                    }
+                }
+                Err(err) => {
+                    let error = Error {
+                        error: err.to_string(),
+                        message: "There was a problem while trying to get response body!".to_string()
+                    };
+                    Err(error)
+                }
+            }
+        }
+        Err(err) => {
+            let error = Error {
+                error: err.to_string(),
+                message: "There was a problem while trying to get server response!".to_string()
+
+            };
+            Err(error)
+        }
+        _ => {
+            panic!("Idk lol");
+        }
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Wallpapers {
@@ -74,7 +135,7 @@ fn list_dir(dir_path: &str) -> Result<Vec<Wallpapers>, ()> {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![list_dir, change_bg_image])
+        .invoke_handler(tauri::generate_handler![list_dir, change_bg_image, get_wallpaper_api])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
