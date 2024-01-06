@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
-import type { ImageInterface, ImageQuery } from "../interfaces";
+import type { ImageApiQuery, ImageInterface, ImageQuery } from "../interfaces";
 
 type CacheData = {
   cachetime: number;
@@ -68,4 +68,28 @@ export const searchHandler: SearchHandler = (data: ImageQuery) => {
     return item.fileName.toLowerCase().includes(searchTerm);
   });
   return data.filtered;
+};
+
+type ApiResponse = {
+  data: ImageApiQuery[]
+}
+export const getImagesFromApi = async () => {
+  const apiResponse: ApiResponse = await invoke("get_wallpaper_api", {});
+  if(apiResponse){
+    return apiResponse.data;
+  }
+};
+
+export const convertApiImages = async () => {
+  const data = await getImagesFromApi();
+  const convertedData: ImageInterface[] = [];
+  data?.forEach((el) => {
+    const converted:ImageInterface = {
+      path: el.path,
+      fileName:el.id,
+      relativePath: el.path
+    };
+    convertedData.push(converted);
+  });
+  return convertedData;
 };
