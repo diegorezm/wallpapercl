@@ -1,11 +1,16 @@
 import { invoke } from "@tauri-apps/api";
 import { ImageInterface } from "../interfaces";
-type props = {
-  data: ImageInterface
+import { useImages } from "../hooks/useImages";
+interface Props {
+  data: ImageInterface,
+  displayMode: boolean
 }
-export default function Image({ data }: props) {
+export default function Image({ data, displayMode }: Props) {
+  const { imageQuery } = useImages();
   const handleButtonClick = async (image: string) => {
-    return await invoke("change_bg_image", { imgPath: image });
+    const changebg = await invoke("change_bg_image", { imgPath: image });
+    const downloadImg = await invoke("download_wallpaper", {folder: imageQuery.defaultDir, path: image});
+    return displayMode ? downloadImg: changebg;
   };
   return (
     <div className="w-full h-60 border-2 rounded border-[var(--purple-color)] hover:border-[var(--pink-color)] group">

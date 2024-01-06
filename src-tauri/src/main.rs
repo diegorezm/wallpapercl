@@ -1,26 +1,25 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::fs;
-use std::path::{PathBuf, Path};
-use std::process::Command;
-use serde::{Serialize, Deserialize};
 use reqwest;
+use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(Serialize, Deserialize)]
 struct APIResponse {
     id: String,
     path: String,
 }
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(Serialize, Deserialize)]
 struct Data {
-    data: Vec<APIResponse>
+    data: Vec<APIResponse>,
 }
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(Serialize, Deserialize)]
 struct Error {
     error: String,
-    message: String
+    message: String,
 }
-
 
 #[tauri::command]
 async fn get_wallpaper_api() -> Result<Data, Error> {
@@ -29,24 +28,22 @@ async fn get_wallpaper_api() -> Result<Data, Error> {
         Ok(response) if response.status().is_success() => {
             let body = response.text().await;
             match body {
-                Ok(body) => {
-                    match serde_json::from_str::<Data>(&body) {
-                        Ok(parsed) => {
-                            Ok(parsed)
-                        }
-                        Err(err) => {
-                            let error = Error {
-                                error: err.to_string(),
-                                message: "There was a problem while trying to parse server response!".to_string()
-                            };
-                            Err(error)
-                        }
+                Ok(body) => match serde_json::from_str::<Data>(&body) {
+                    Ok(parsed) => Ok(parsed),
+                    Err(err) => {
+                        let error = Error {
+                            error: err.to_string(),
+                            message: "There was a problem while trying to parse server response!"
+                                .to_string(),
+                        };
+                        Err(error)
                     }
-                }
+                },
                 Err(err) => {
                     let error = Error {
                         error: err.to_string(),
-                        message: "There was a problem while trying to get response body!".to_string()
+                        message: "There was a problem while trying to get response body!"
+                            .to_string(),
                     };
                     Err(error)
                 }
@@ -55,8 +52,7 @@ async fn get_wallpaper_api() -> Result<Data, Error> {
         Err(err) => {
             let error = Error {
                 error: err.to_string(),
-                message: "There was a problem while trying to get server response!".to_string()
-
+                message: "There was a problem while trying to get server response!".to_string(),
             };
             Err(error)
         }
@@ -66,7 +62,14 @@ async fn get_wallpaper_api() -> Result<Data, Error> {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[tauri::command]
+fn download_wallpaper(folder: String,path: String) {
+    let args = format!("-P {} {}",folder, path);
+    let _ = Command::new("wget").args(args.split_whitespace()).output();
+}
+
+
+#[derive(Serialize, Deserialize)]
 struct Wallpapers {
     file_path: PathBuf,
     file_name: String,
@@ -76,7 +79,8 @@ fn is_image(file_path: &Path) -> bool {
     if let Some(extension) = file_path.extension() {
         if let Some(ext_str) = extension.to_str() {
             match ext_str.to_lowercase().as_str() {
-                "jpg" | "jpeg" | "png" | "gif" | "bmp" | "webp" | "ico" | "tiff" | "tga" | "svg" => {
+                "jpg" | "jpeg" | "png" | "gif" | "bmp" | "webp" | "ico" | "tiff" | "tga"
+                | "svg" => {
                     return true;
                 }
                 _ => return false,
@@ -90,17 +94,15 @@ fn is_image(file_path: &Path) -> bool {
 fn change_bg_image(img_path: &str) -> bool {
     let path = Path::new(&img_path);
     match is_image(path) {
-        true => { 
+        true => {
             let command = Command::new("changer").arg(img_path).output();
             if let Ok(_output) = command {
                 return true;
             } else {
                 return false;
             }
-        },
-        false => {
-            return false
         }
+        false => return false,
     }
 }
 
@@ -114,8 +116,8 @@ fn list_dir(dir_path: &str) -> Result<Vec<Wallpapers>, ()> {
     for entry in entries {
         if let Ok(entry) = entry {
             let file_path = entry.path();
-            if is_image(&file_path){
-                match file_path.file_name(){
+            if is_image(&file_path) {
+                match file_path.file_name() {
                     Some(file_name_os) => {
                         if let Some(file_name) = file_name_os.to_str() {
                             let new_image = Wallpapers {
@@ -135,7 +137,12 @@ fn list_dir(dir_path: &str) -> Result<Vec<Wallpapers>, ()> {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![list_dir, change_bg_image, get_wallpaper_api])
+        .invoke_handler(tauri::generate_handler![
+            list_dir,
+            change_bg_image,
+            get_wallpaper_api,
+            download_wallpaper
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
