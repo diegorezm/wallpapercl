@@ -10,3 +10,8 @@ export interface ImageQuery {
   defaultDir: string,
   search: string
 }
+
+export interface ImageApiQuery {
+  id: string,
+  path: string
+}
