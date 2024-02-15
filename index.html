@@ -1,54 +1,41 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/src/styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/src/main.ts" defer></script>
-    <style>
-      .logo.vite:hover {
-        filter: drop-shadow(0 0 2em #747bff);
-      }
 
-      .logo.typescript:hover {
-        filter: drop-shadow(0 0 2em #2d79c7);
-      }
-    </style>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/src/main.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wallpapercl</title>
+  <script type="module" src="/src/main.ts" defer></script>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
 
-  <body>
-    <div class="container">
-      <h1>Welcome to Tauri!</h1>
+<body>
 
-      <div class="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/src/assets/vite.svg" class="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img
-            src="/src/assets/tauri.svg"
-            class="logo tauri"
-            alt="Tauri logo"
-          />
-        </a>
-        <a href="https://www.typescriptlang.org/docs" target="_blank">
-          <img
-            src="/src/assets/typescript.svg"
-            class="logo typescript"
-            alt="typescript logo"
-          />
-        </a>
-      </div>
-
-      <p>Click on the Tauri logo to learn more about the framework</p>
-
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-
-      <p id="greet-msg"></p>
+  <section class="actions__container">
+    <div class="files__wrapper">
+      <button class="action__button" open-folder-button>
+        <ion-icon name="folder-open-outline"></ion-icon>
+      </button>
     </div>
-  </body>
+
+    <div class="search__wrapper">
+      <input placeholder="Search for any wallpaper..." type="search" id="search" wallpaper-search>
+    </div>
+
+    <div class="refresh__wrapper">
+      <button class="action__button" refresh-button>
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
+    </div>
+  </section>
+
+  <div class="wallpaper__container" wallpaper-container />
+  <div class="wallpaper__wrapper" wallpaper-template>
+    <img src="" alt="" wallpaper-image>
+  </div>
+
+</body>
+
 </html>
