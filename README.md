@@ -10,5 +10,6 @@ cd wallpapercl && npm i && npm run tauri dev
 ```
 Another requirement would be the script [changer](https://github.com/diegorezm/dotfiles-d/blob/master/.local/bin/changer) that i wrote, although
 i plan on going for a Rust alternative eventually.
+If you want to use this, the changer script must be under ```/home/$USER/.local/bin/scripts/changer```.
 
 ![print](./print.png)
