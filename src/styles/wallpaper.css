@@ -10,6 +10,11 @@
   border-radius: var(--radius);
 }
 
+.wallpaper__container.fixed .wallpaper__wrapper{
+  width: 30rem;
+  height: 40rem;
+}
+
 .wallpaper__wrapper{
   align-items: center;
   width: 100%; 

@@ -56,6 +56,11 @@ export class WallpaperHandler {
   public searchHandler(searchQuery: string) {
     const searchTerm = searchQuery.toLowerCase() || ""
     this.filteredImages = this.images.filter((item) => item.fileName.toLowerCase().includes(searchTerm))
+    if (this.filteredImages.length === 1){
+      this.wallpaperContainer.classList.add("fixed")
+    }else{
+      this.wallpaperContainer.classList.remove("fixed")
+    }
     this.renderImages(this.filteredImages)
   }
 
