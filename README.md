@@ -1,7 +1,14 @@
-# Tauri + Vanilla TS
+# Wallpapercl
+Wallpaper manager application made with tauri.
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Typescript.
+# Development
+The commands you need to run (on Arch linux):
+```bash
+sudo pacman -S --needed webkit2gtk base-devel curl wget file openssl appmenu-gtk-module gtk3 libappindicator-gtk3 librsvg libvips
+git clone https://github.com/diegorezm/wallpapercl
+cd wallpapercl && npm i && npm run tauri dev
+```
+Another requirement would be the script [changer](https://github.com/diegorezm/dotfiles-d/blob/master/.local/bin/changer) that i wrote, although
+i plan on going for a Rust alternative eventually.
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+![print](./print.png)
