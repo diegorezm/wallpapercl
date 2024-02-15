@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url("./styles/wallpaper.css");
+@import url("./styles/actions.css");
+
+:root {
+  font-family: 'Roboto', Arial,sans-serif;
+  --foreground: #b3b1ad;
+  --base: #0a0e14;
+  --gradient-bg: linear-gradient(to right bottom, #0a0e14, #0b0f15, #0b0f16, #0c1016, #0d1017);
+  --gradient-pink: linear-gradient(to right bottom , #d2a6ff, #b792de, #9d7fbe, #846b9e, #6c5980);
+  --crust: #0D1017;
+  --red-color: #F26D78;
+  --purple-color: #6C5980;
+  --pink-color: #D2A6FF;
+  --radius:0.2em;
+}
+
+[data-theme="macchiato"]{
+  --base:#24273A;
+  --foreground: #CAD3F5;
+  --red-color: #ed8796;
+  --purple-color: #c6a0f6;
+  --pink-color: #f5bde6;
+  --crust: #181926;
+  --gradient-bg:linear-gradient(to bottom, #24273a, #212335, #1e2030, #1b1c2b, #181926);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
+
+html,
+body{
+  min-height: 100vh;
+  background-image: var(--gradient-bg);
+  color: var(--foreground);
+  margin-left:1em;
+  margin-right:1em;
+}
+
