@@ -1,22 +1,29 @@
-import { invoke } from "@tauri-apps/api/tauri";
+import { WallpaperHandler } from "./class/WallpaperHandler"
+import { Actions } from "./class/Actions"
 
-let greetInputEl: HTMLInputElement | null;
-let greetMsgEl: HTMLElement | null;
+const openFoulderButton = document.querySelector("[open-folder-button]") as HTMLButtonElement
+const refreshButton = document.querySelector("[refresh-button]") as HTMLButtonElement
 
-async function greet() {
-  if (greetMsgEl && greetInputEl) {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    greetMsgEl.textContent = await invoke("greet", {
-      name: greetInputEl.value,
-    });
+const wallpaperSearch = document.querySelector("[wallpaper-search]") as HTMLInputElement
+
+const wallpaperHanlder = new WallpaperHandler()
+wallpaperHanlder.loadImagesFromDirectory()
+
+wallpaperSearch.addEventListener("input", (e) => {
+  const searchQuery = (e.target as HTMLInputElement)?.value;
+  wallpaperHanlder.searchHandler(searchQuery)
+  if (searchQuery.length === 0 || !searchQuery) {
+    wallpaperHanlder.renderImages()
+    wallpaperHanlder.filteredImages = []
   }
+})
+
+openFoulderButton.onclick = async () => {
+  const directory = await Actions.handleDirectoryButton()
+  wallpaperHanlder.loadImagesFromDirectory(directory)
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
-});
+refreshButton.onclick = async () => {
+  const new_images = await Actions.handleRefreshButton()
+  wallpaperHanlder.setImages = new_images
+}
