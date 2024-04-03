@@ -7,7 +7,6 @@ export class Actions {
     const images = await getImagesFromDirectory(path)
     setCacheData({
       images_directory: path,
-      images
     })
     return images
   }

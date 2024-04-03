@@ -1,40 +1,18 @@
-import { invoke } from "@tauri-apps/api"
-import { convertFileSrc } from "@tauri-apps/api/tauri"
 import { ImageInterface } from "../types"
+import { get_cached_dir, list_dir } from "./tauri_commands"
 
 type CacheData = {
-  images: ImageInterface[]
   images_directory: string
 }
+const CACHEKEY = "directory_path"
 
 type GetImagesFromDirectory = (path: string) => Promise<ImageInterface[]>
 export const getImagesFromDirectory: GetImagesFromDirectory = async (path) => {
   try {
-    type Wallpapers = {
-      file_path: string,
-      file_name: string
-    }
-    type Response = {
-      dir_path: string,
-      dir_files: Wallpapers[]
-    }    
-    const images: ImageInterface[] = []
-    const directory = (await invoke("list_dir", {
-      path,
-    })) as Response
-
-    directory.dir_files.forEach((val) => {
-      const image: ImageInterface = {
-        relativePath: val.file_path,
-        path: convertFileSrc(val.file_path),
-        fileName: val.file_name
-      }
-      images.push(image)
-    })
-
-    const jsonData = { images, images_directory: directory.dir_path }
+    const directory = await list_dir(path)
+    const jsonData = { images_directory: directory.dir_path }
     setCacheData(jsonData)
-    return images
+    return directory.dir_files
   } catch (error) {
     console.error("Error fetching paths:", error)
     return []
@@ -43,26 +21,22 @@ export const getImagesFromDirectory: GetImagesFromDirectory = async (path) => {
 
 type GetCachedData = () => Promise<ImageInterface[]>
 export const getCachedData: GetCachedData = async () => {
-  const cacheData = localStorage.getItem("images")
-  if (cacheData) {
-    const data: CacheData = JSON.parse(cacheData)
-    return data.images
+  let directory = await get_cached_dir()
+  if (directory === null && getStoredPath() !== "") {
+    const path = getStoredPath()
+    directory = await list_dir(path)
   }
-  const directory = getStoredPath()
-  if (directory) {
-    return await getImagesFromDirectory(directory)
-  }
-  return []
+  return directory.dir_files
 }
 
 export const setCacheData = (cache: CacheData) => {
-  localStorage.setItem("images", JSON.stringify(cache))
+  localStorage.setItem(CACHEKEY, JSON.stringify(cache))
 }
 
 
 type GetStoredPath = () => string
 export const getStoredPath: GetStoredPath = () => {
-  const cacheData = localStorage.getItem("images")
+  const cacheData = localStorage.getItem(CACHEKEY)
   if (cacheData) {
     const data: CacheData = JSON.parse(cacheData)
     return data.images_directory
@@ -72,7 +46,7 @@ export const getStoredPath: GetStoredPath = () => {
 
 type SetStoredPath = (path: string) => void
 export const setStoredPath: SetStoredPath = (path) => {
-  const cacheData = localStorage.getItem("images")
+  const cacheData = localStorage.getItem(CACHEKEY)
   if (cacheData) {
     const data: CacheData = JSON.parse(cacheData)
     data.images_directory = path

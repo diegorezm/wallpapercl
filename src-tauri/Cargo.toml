@@ -2,16 +2,17 @@
 name = "wallpapercl"
 version = "0.1.0"
 description = "Wallpaper manager"
-authors = ["you"]
+authors = ["diegorezm"]
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = { version = "1.5.1", features = [] }
 
 [dependencies]
-tauri = { version = "1.5", features = [ "dialog-save", "protocol-asset", "dialog-open", "shell-open"] }
+tauri = { version = "1.6.1", features = [ "protocol-all", "dialog-save", "dialog-open", "shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+lazy_static = "1.4.0"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

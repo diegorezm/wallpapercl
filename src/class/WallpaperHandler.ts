@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api"
 import { ImageInterface } from "../types"
 import { getCachedData, getImagesFromDirectory } from "../utils"
+import { search } from "../utils/tauri_commands"
 
 export class WallpaperHandler {
   private wallpaperTemplate: HTMLDivElement
@@ -45,17 +46,17 @@ export class WallpaperHandler {
       const template = this.wallpaperTemplate.cloneNode(true) as HTMLDivElement;
       const imageTag = template.querySelector("[wallpaper-image]") as HTMLImageElement;
       imageTag.src = image.path;
-      imageTag.alt = image.fileName;
+      imageTag.alt = image.file_name;
       imageTag.onclick = async () => {
-        await invoke("change_wallpaper", { wallpaper: { file_path: image.relativePath, file_name: image.fileName } });
+        await invoke("change_wallpaper", { wallpaper: { file_path: image.file_path, file_name: image.file_name , path: image.path} });
       }
       this.wallpaperContainer.append(template);
     });
   }
 
-  public searchHandler(searchQuery: string) {
+  public async searchHandler(searchQuery: string) {
     const searchTerm = searchQuery.toLowerCase() || ""
-    this.filteredImages = this.images.filter((item) => item.fileName.toLowerCase().includes(searchTerm))
+    this.filteredImages = await search(searchTerm)
     if (this.filteredImages.length === 1){
       this.wallpaperContainer.classList.add("fixed")
     }else{
@@ -63,5 +64,4 @@ export class WallpaperHandler {
     }
     this.renderImages(this.filteredImages)
   }
-
 }

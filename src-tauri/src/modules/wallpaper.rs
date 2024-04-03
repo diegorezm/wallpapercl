@@ -1,22 +1,38 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
-use std::process::Command;
 use std::env::home_dir;
-#[derive(Serialize, Deserialize)]
+use std::path::{Path, PathBuf};
+use std::process::Command;
+
+#[derive(Debug,Serialize, Deserialize, Clone)]
 pub struct Wallpaper {
-    file_path: PathBuf,
-    file_name: String,
+    pub file_path: PathBuf,
+    pub file_name: String,
+    pub path: String,
 }
 
 impl Wallpaper {
-    pub fn new(path: &PathBuf) -> Self {
+    pub fn new(path: &Path) -> Self {
         let file_path = path.to_path_buf();
         let file_name_raw = file_path.file_name().unwrap_or_default().to_str();
         let file_name = file_name_raw.unwrap().to_string();
+        let path = Self::convert_path_to_url(file_path.to_str().unwrap());
         Self {
             file_path,
             file_name,
+            path,
         }
+    }
+
+    fn convert_path_to_url(path: &str) -> String {
+        const SUFFIX: &str = "asset://localhost/";
+        let path_raw = path.to_string();
+        let path_it = path_raw.split('/');
+        let mut final_string = SUFFIX.to_string();
+        for p in path_it {
+            let s = format!("%2F{p}");
+            final_string.push_str(&s.to_string());
+        }
+        final_string
     }
 
     pub fn is_image(&self) -> bool {

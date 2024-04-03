@@ -9,10 +9,9 @@
   border: 2.2px solid var(--pink-color);
   border-radius: var(--radius);
 }
-
 .wallpaper__container.fixed .wallpaper__wrapper{
-  width: 30rem;
-  height: 40rem;
+  width: 100%;
+  height: 30rem;
 }
 
 .wallpaper__wrapper{

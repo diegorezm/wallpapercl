@@ -20,11 +20,14 @@
           "open": true,
           "save": true
       },
+      "fs": {
+        "scope": ["/**/*"]
+      },
       "all": false,
       "protocol": {
-        "all": false,
+        "all": true,
         "asset": true,
-        "assetScope": ["**"]
+        "assetScope": ["/**/*"]
       },
       "shell": {
         "all": false,

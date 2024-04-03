@@ -1,5 +1,5 @@
 export type ImageInterface  = {
   path: string,
-  relativePath: string,
-  fileName: string
+  file_path: string,
+  file_name: string
 }
