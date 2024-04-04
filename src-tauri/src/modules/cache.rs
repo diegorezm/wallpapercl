@@ -2,7 +2,7 @@ use crate::modules::dir::Dir;
 use serde::{Deserialize, Serialize};
 use std::{
     fs::{File, self},
-    io::{copy, stdout, BufWriter},
+    io::BufWriter,
     io::{Result, Write},
 };
 use tauri::api::path::cache_dir;

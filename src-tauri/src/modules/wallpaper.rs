@@ -26,12 +26,8 @@ impl Wallpaper {
     fn convert_path_to_url(path: &str) -> String {
         const SUFFIX: &str = "asset://localhost/";
         let path_raw = path.to_string();
-        let path_it = path_raw.split('/');
-        let mut final_string = SUFFIX.to_string();
-        for p in path_it {
-            let s = format!("%2F{p}");
-            final_string.push_str(&s.to_string());
-        }
+        let path_it = path_raw.replace('/', "%2F");
+        let final_string = format!("{SUFFIX}{path_it}");
         final_string
     }
 
