@@ -24,10 +24,10 @@ impl Wallpaper {
     }
 
     fn convert_path_to_url(path: &str) -> String {
-        const SUFFIX: &str = "asset://localhost/";
+        const PREFIX: &str = "asset://localhost/";
         let path_raw = path.to_string();
         let path_it = path_raw.replace('/', "%2F");
-        let final_string = format!("{SUFFIX}{path_it}");
+        let final_string = format!("{PREFIX}{path_it}");
         final_string
     }
 
