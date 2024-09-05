@@ -4,12 +4,6 @@
 
 ![WallpaperCL Showcase](./showcase.png)
 
-## Features
-
-- Lightweight and fast, built with Tauri for optimized performance.
-- Easily manage your wallpapers and set them automatically on startup.
-- Cross-platform support for Linux (with future plans for macOS and Windows).
-
 ## Installation
 
 ### Dependencies
