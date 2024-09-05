@@ -16,8 +16,14 @@ const Image = ({ image }: Props) => {
   };
   return (
     <div className="hover:cursor-pointer" onClick={onClick}>
-      <img src={image.path} alt={image.file_name} className="rounded-md" />
-      {image.file_name}
+      <img
+        src={image.path}
+        alt={image.file_name}
+        className="rounded-md object-cover"
+      />
+      <p className="text-center text-secondary-foreground text-md font-bold">
+        {image.file_name}
+      </p>
     </div>
   );
 };
