@@ -47,7 +47,7 @@ fn search(query: &str) -> Vec<Wallpaper> {
 
 #[tauri::command]
 fn change_wallpaper(wallpaper: Wallpaper) -> Result<bool, String> {
-    Ok(wallpaper.change_bg())
+    Ok(wallpaper.change_bg(None))
 }
 
 fn main() {

@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
-use std::env::home_dir;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use wallpaper;
 
-#[derive(Debug,Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Wallpaper {
     pub file_path: PathBuf,
     pub file_name: String,
@@ -45,25 +44,15 @@ impl Wallpaper {
         false
     }
 
-    pub fn change_bg(&self) -> bool {
-        if let Some(mut path) = home_dir() {
-            path.push(".local/bin/scripts");
-            let command_path = path.join("changer");
-            match self.is_image() {
-                true => {
-                    let command = Command::new(command_path).arg(&self.file_path).output();
-
-                    if let Ok(_output) = command {
-                        return true;
-                    } else {
-                        return false;
-                    }
+    pub fn change_bg(&self, mode: Option<wallpaper::Mode>) -> bool {
+        if let Some(path_string) = self.file_path.to_str() {
+            if wallpaper::set_from_path(path_string).is_ok() {
+                let mode = mode.unwrap_or(wallpaper::Mode::Fit);
+                if wallpaper::set_mode(mode).is_ok() {
+                    return true;
                 }
-                false => return false,
             }
-        } else {
-            println!("Impossible to get your home dir!");
-            return false;
         }
+        false
     }
 }
