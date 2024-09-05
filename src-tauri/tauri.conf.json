@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "wallpapercl",
-    "version": "0.1.0"
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -20,17 +20,13 @@
         "save": true
       },
       "fs": {
-        "scope": [
-          "/**/*"
-        ]
+        "scope": ["/**/*"]
       },
       "all": false,
       "protocol": {
         "all": true,
         "asset": true,
-        "assetScope": [
-          "/**/*"
-        ]
+        "assetScope": ["/**/*"]
       },
       "shell": {
         "all": false,
@@ -61,3 +57,4 @@
     }
   }
 }
+
