@@ -2,6 +2,17 @@
 
 Wallpaper manager application made with tauri.
 
+# Install
+
+- Install dedependencies
+
+```bash
+sudo pacman -S feh
+```
+
+- Download from the releases page
+  [diegorezm/wallpapercl](https://github.com/diegorezm/wallpapercl/releases)
+
 # Development
 
 The commands you need to run (on Arch linux):
@@ -19,13 +30,10 @@ sudo pacman -S --needed \
     gtk3 \
     libappindicator-gtk3 \
     librsvg \
-    libvips
+    libvips \
+    feh
 git clone https://github.com/diegorezm/wallpapercl
 cd wallpapercl && npm i && npm run tauri dev
 ```
-
-Another requirement would be the script [changer](https://github.com/diegorezm/dotfiles-d/blob/master/.local/bin/changer) that i wrote, although
-i plan on going for a Rust alternative eventually.
-If you want to use this, the changer script must be under `/home/$USER/.local/bin/scripts/changer`.
 
 ![print](./showcase.png)
