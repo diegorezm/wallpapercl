@@ -1,7 +1,31 @@
-# Tauri + React + Typescript
+# Wallpapercl
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+Wallpaper manager application made with tauri.
 
-## Recommended IDE Setup
+# Development
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+The commands you need to run (on Arch linux):
+
+```bash
+sudo pacman -Syu
+sudo pacman -S --needed \
+    webkit2gtk \
+    base-devel \
+    curl \
+    wget \
+    file \
+    openssl \
+    appmenu-gtk-module \
+    gtk3 \
+    libappindicator-gtk3 \
+    librsvg \
+    libvips
+git clone https://github.com/diegorezm/wallpapercl
+cd wallpapercl && npm i && npm run tauri dev
+```
+
+Another requirement would be the script [changer](https://github.com/diegorezm/dotfiles-d/blob/master/.local/bin/changer) that i wrote, although
+i plan on going for a Rust alternative eventually.
+If you want to use this, the changer script must be under `/home/$USER/.local/bin/scripts/changer`.
+
+![print](./showcase.png)
