@@ -68,7 +68,7 @@ If you wish to contribute or build WallpaperCL from source, follow these steps (
    git clone https://github.com/diegorezm/wallpapercl
    ```
 
-5. Install Node.js dependencies and start the development environment:
+5. Install Bun dependencies and start the development environment:
 
    ```bash
    cd wallpapercl
