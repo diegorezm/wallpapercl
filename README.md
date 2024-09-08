@@ -56,18 +56,24 @@ If you wish to contribute or build WallpaperCL from source, follow these steps (
        feh
    ```
 
-3. Clone the repository:
+3. Install bun:
+
+   ```bash
+   curl -fsSL https://bun.sh/install | bash
+   ```
+
+4. Clone the repository:
 
    ```bash
    git clone https://github.com/diegorezm/wallpapercl
    ```
 
-4. Install Node.js dependencies and start the development environment:
+5. Install Node.js dependencies and start the development environment:
 
    ```bash
    cd wallpapercl
-   npm install
-   npm run tauri dev
+   bun i
+   bun run tauri dev
    ```
 
 Now, you're ready to contribute or modify the application.
