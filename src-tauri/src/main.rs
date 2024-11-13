@@ -8,6 +8,7 @@ use crate::modules::cache::Cache;
 use self::modules::dir::Dir;
 use self::modules::wallpaper::Wallpaper;
 use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
 
 lazy_static! {
     pub static ref DIR: Mutex<Dir> = Mutex::new(Dir::new());
@@ -45,9 +46,28 @@ fn search(query: &str) -> Vec<Wallpaper> {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+enum WallpaperMode {
+    Center,
+    Crop,
+    Fit,
+    Span,
+    Stretch,
+    Tile,
+}
+
 #[tauri::command]
-fn change_wallpaper(wallpaper: Wallpaper) -> Result<bool, String> {
-    Ok(wallpaper.change_bg(None))
+fn change_wallpaper(wallpaper: Wallpaper, mode: WallpaperMode) -> Result<bool, String> {
+    let m = match mode {
+        WallpaperMode::Center => wallpaper::Mode::Center,
+        WallpaperMode::Crop => wallpaper::Mode::Crop,
+        WallpaperMode::Fit => wallpaper::Mode::Fit,
+        WallpaperMode::Span => wallpaper::Mode::Span,
+        WallpaperMode::Stretch => wallpaper::Mode::Stretch,
+        WallpaperMode::Tile => wallpaper::Mode::Tile,
+    };
+
+    Ok(wallpaper.change_bg(m))
 }
 
 fn main() {

@@ -118,6 +118,52 @@
       --radius: 0.75rem;
     }
 
+    .catppuccin-mocha {
+      --background: 240 21% 15%;
+      --foreground: 226 64% 88%;
+      --muted: 240 12% 19%;
+      --muted-foreground: 240 12% 69%;
+      --popover: 240 21% 12%;
+      --popover-foreground: 226 64% 98%;
+      --card: 240 21% 13%;
+      --card-foreground: 226 64% 93%;
+      --border: 240 11% 20%;
+      --input: 240 11% 23%;
+      --primary: 267 84% 81%;
+      --primary-foreground: 267 84% 21%;
+      --secondary: 267 30% 25%;
+      --secondary-foreground: 267 30% 85%;
+      --accent: 240 21% 30%;
+      --accent-foreground: 240 21% 90%;
+      --destructive: 8 96% 56%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 267 84% 81%;
+      --radius: 0.5rem;
+    }
+
+
+    .gruvbox-dark {
+      --background: 195 6% 12%;
+      --foreground: 43 59% 81%;
+      --muted: 195 12% 16%;
+      --muted-foreground: 195 12% 66%;
+      --popover: 195 6% 9%;
+      --popover-foreground: 43 59% 91%;
+      --card: 195 6% 10%;
+      --card-foreground: 43 59% 86%;
+      --border: 0 0% 17%;
+      --input: 0 0% 20%;
+      --primary: 43 59% 81%;
+      --primary-foreground: 43 59% 21%;
+      --secondary: 43 30% 25%;
+      --secondary-foreground: 43 30% 85%;
+      --accent: 195 6% 27%;
+      --accent-foreground: 195 6% 87%;
+      --destructive: 4 84% 56%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 43 59% 81%;
+      --radius: 0.5rem;
+    }
   }
 }
 

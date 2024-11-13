@@ -5,10 +5,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Settings } from "lucide-react";
+import {Settings} from "lucide-react";
 import ThemeSelect from "./theme-select";
 import RefreshButton from "./refresh-button";
 import DirectoryButton from "./directory-button";
+import ModeSelect from "./mode-select";
 
 const Sidebar = () => {
   return (
@@ -29,9 +30,16 @@ const Sidebar = () => {
           <SheetTitle className="text-lg">Change directory</SheetTitle>
           <DirectoryButton />
         </div>
+
         <div>
           <SheetTitle className="text-lg">Theme</SheetTitle>
           <ThemeSelect />
+        </div>
+
+
+        <div>
+          <SheetTitle className="text-lg">Wallpaper mode</SheetTitle>
+          <ModeSelect />
         </div>
       </SheetContent>
     </Sheet>

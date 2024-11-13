@@ -44,10 +44,9 @@ impl Wallpaper {
         false
     }
 
-    pub fn change_bg(&self, mode: Option<wallpaper::Mode>) -> bool {
+    pub fn change_bg(&self, mode: wallpaper::Mode) -> bool {
         if let Some(path_string) = self.file_path.to_str() {
             if wallpaper::set_from_path(path_string).is_ok() {
-                let mode = mode.unwrap_or(wallpaper::Mode::Fit);
                 if wallpaper::set_mode(mode).is_ok() {
                     return true;
                 }

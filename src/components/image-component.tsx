@@ -1,17 +1,23 @@
-import { ImageInterface } from "@/types";
-import { invoke } from "@tauri-apps/api";
+import {useModeContext} from "@/providers/mode-provider";
+import {ImageInterface} from "@/types";
+import {invoke} from "@tauri-apps/api";
 
 type Props = {
   image: ImageInterface;
 };
-const Image = ({ image }: Props) => {
+
+const Image = ({image}: Props) => {
+  const {mode} = useModeContext();
+
   const onClick = async () => {
+    console.log(mode);
     await invoke("change_wallpaper", {
       wallpaper: {
         file_path: image.file_path,
         file_name: image.file_name,
         path: image.path,
       },
+      mode
     });
   };
   return (
