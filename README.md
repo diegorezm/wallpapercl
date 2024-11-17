@@ -1,15 +1,15 @@
 # wallpapercl
 
-To install dependencies:
+A wallpaper manager written in Go.
 
-```bash
-bun install
+## Discalimer
+
+The 'serve' option is not working properly yet. It's very slow and I'm not sure why.
+
+## Usage
+
+just run
+
 ```
-
-To run:
-
-```bash
-bun run index.ts
+> wallpapercl
 ```
-
-This project was created using `bun init` in bun v1.1.20. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

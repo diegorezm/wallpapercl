@@ -3,8 +3,10 @@ package server
 import (
 	"log"
 	"net/http"
+	"path"
 	"strings"
 
+	"github.com/diegorezm/wallpapercl"
 	"github.com/diegorezm/wallpapercl/internal/models"
 	"github.com/diegorezm/wallpapercl/internal/views/pages"
 )
@@ -24,10 +26,40 @@ func NewServer(opts *ServerOpts) *server {
 	}
 }
 
+func servePublic(w http.ResponseWriter, r *http.Request) {
+	// Remove the "/public" prefix from the URL to find the correct file
+	filePath := strings.TrimPrefix(r.URL.Path, "/public/")
+
+	// Check if the file exists in the embedded content
+	data, err := wallpapercl.StaticFiles.ReadFile(path.Join("public", filePath))
+	if err != nil {
+		http.Error(w, "File not found", http.StatusNotFound)
+		return
+	}
+
+	// Set appropriate headers based on file extension
+	ext := path.Ext(filePath)
+	switch ext {
+	case ".css":
+		w.Header().Set("Content-Type", "text/css")
+	case ".js":
+		w.Header().Set("Content-Type", "application/javascript")
+	case ".jpg", ".jpeg":
+		w.Header().Set("Content-Type", "image/jpeg")
+	case ".png":
+		w.Header().Set("Content-Type", "image/png")
+	case ".gif":
+		w.Header().Set("Content-Type", "image/gif")
+	default:
+		w.Header().Set("Content-Type", "application/octet-stream")
+	}
+
+	// Serve the file content
+	w.Write(data)
+}
+
 func (s *server) Start() {
-	publicDir := "./public"
-	fs := http.FileServer(http.Dir(publicDir))
-	http.Handle("/public/", http.StripPrefix("/public/", fs))
+	http.HandleFunc("/public/", servePublic)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
