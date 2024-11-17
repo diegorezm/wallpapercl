@@ -11,5 +11,5 @@ The 'serve' option is not working properly yet. It's very slow and I'm not sure 
 just run
 
 ```
-> wallpapercl
+wallpapercl
 ```
