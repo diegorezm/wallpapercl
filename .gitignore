@@ -2,4 +2,4 @@ errors.txt
 bin
 dist
 node_modules
-temp
+tmp
