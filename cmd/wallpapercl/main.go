@@ -11,11 +11,8 @@ import (
 
 func main() {
 
-	var serve bool
 	var current bool
 	var changeDirectory bool
-
-	flag.BoolVar(&serve, "serve", false, "Start the server")
 
 	flag.BoolVar(&current, "current", false, "Refresh the wallpapers")
 	flag.BoolVar(&changeDirectory, "change-directory", false, "Change the wallpaper directory")
@@ -24,7 +21,7 @@ func main() {
 
 	config := models.NewConfig()
 
-	if config.Dir == nil || config.Mode == nil || config.CurrentWallpaper == nil {
+	if config.CurrentDirectory == nil || config.Mode == nil || config.CurrentWallpaper == nil {
 		dp := tea.NewDirectoryPicker()
 		pp := bubbletea.NewProgram(&dp, bubbletea.WithAltScreen())
 		if _, err := pp.Run(); err != nil {
@@ -36,7 +33,7 @@ func main() {
 			panic(err)
 		}
 
-		config.SetDir(*dir)
+		config.SetCurrentDirectory(dir.Path)
 		config.SetMode(models.Zoom)
 		config.SaveConfig()
 	}
@@ -54,7 +51,9 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		config.SetDir(*dir)
+
+		config.SetCurrentDirectory(dir.Path)
+		config.SaveConfig()
 	} else {
 		m := tea.NewWallpaperSelector(&config)
 		p := bubbletea.NewProgram(m, bubbletea.WithAltScreen())

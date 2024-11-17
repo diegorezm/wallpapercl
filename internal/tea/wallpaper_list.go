@@ -37,6 +37,7 @@ func (m *wallpaperModel) cycleMode() {
 	// Cycle through available modes
 	m.modeIndex = (m.modeIndex + 1) % len(m.modes)
 	m.selectedMode = m.modes[m.modeIndex]
+	m.config.SetMode(m.selectedMode)
 }
 
 func (m wallpaperModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -50,7 +51,6 @@ func (m wallpaperModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			selected := m.list.SelectedItem().(wallpaperItem)
 			selected.Apply(m.selectedMode)
 			m.config.SetCurrentWallpaper(selected.Wallpaper)
-			m.config.SetMode(m.selectedMode)
 			return m, nil
 		case "tab":
 			m.cycleMode()
@@ -71,9 +71,14 @@ func (m wallpaperModel) View() string {
 }
 
 func NewWallpaperSelector(config *models.Config) wallpaperModel {
+	dir, err := models.NewDir(*config.CurrentDirectory)
+	if err != nil {
+		panic(err)
+	}
+
 	// Convert the wallpapers into list items
-	items := make([]list.Item, len(config.Dir.Wallpapers))
-	for i, wp := range config.Dir.Wallpapers {
+	items := make([]list.Item, len(dir.Wallpapers))
+	for i, wp := range dir.Wallpapers {
 		items[i] = wallpaperItem{Wallpaper: wp}
 	}
 

@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	Mode             *WallpaperMode `json:"mode,omitempty"`
-	Dir              *Dir           `json:"dir,omitempty"`
+	CurrentDirectory *string        `json:"currentDirectory,omitempty"`
 	CurrentWallpaper *Wallpaper     `json:"currentWallpaper,omitempty"`
 }
 
@@ -19,7 +19,7 @@ const (
 
 var defaultConfig = Config{
 	Mode:             nil,
-	Dir:              nil,
+	CurrentDirectory: nil,
 	CurrentWallpaper: nil,
 }
 
@@ -27,8 +27,8 @@ func NewConfig() Config {
 	return setupConfigFile()
 }
 
-func (c *Config) SetDir(dir Dir) error {
-	c.Dir = &dir
+func (c *Config) SetCurrentDirectory(dir string) error {
+	c.CurrentDirectory = &dir
 	return c.SaveConfig()
 }
 
