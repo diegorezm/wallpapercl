@@ -6,6 +6,7 @@ import (
 
 	bubbletea "github.com/charmbracelet/bubbletea"
 	"github.com/diegorezm/wallpapercl/internal/models"
+	"github.com/diegorezm/wallpapercl/internal/server"
 	"github.com/diegorezm/wallpapercl/internal/tea"
 )
 
@@ -13,7 +14,9 @@ func main() {
 
 	var current bool
 	var changeDirectory bool
+	var serve bool
 
+	flag.BoolVar(&serve, "serve", false, "Start the server")
 	flag.BoolVar(&current, "current", false, "Refresh the wallpapers")
 	flag.BoolVar(&changeDirectory, "change-directory", false, "Change the wallpaper directory")
 
@@ -36,6 +39,18 @@ func main() {
 		config.SetCurrentDirectory(dir.Path)
 		config.SetMode(models.Zoom)
 		config.SaveConfig()
+	}
+
+	if serve {
+		dir, err := models.NewDir(*config.CurrentDirectory)
+		if err != nil {
+			panic(err)
+		}
+		s := server.NewServer(&server.ServerOpts{
+			Config: &config,
+			Dir:    dir,
+		})
+		s.Start()
 	}
 
 	if current {

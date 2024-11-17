@@ -3,6 +3,7 @@ module github.com/diegorezm/wallpapercl
 go 1.23.2
 
 require (
+	github.com/a-h/templ v0.2.793 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/bubbles v0.20.0 // indirect

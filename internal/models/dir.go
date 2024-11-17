@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -32,13 +33,27 @@ func setupDir(path string) (*Dir, error) {
 
 	var wallpapers []Wallpaper
 	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+
 		extension := strings.ToLower(filepath.Ext(file.Name()))
 		if !validFileExt[extension] {
 			continue
 		}
+
+		filePath := path + "/" + file.Name()
+		fileData, err := os.ReadFile(filePath)
+		if err != nil {
+			return nil, err
+		}
+
+		base64Data := base64.StdEncoding.EncodeToString(fileData)
+
 		wallpapers = append(wallpapers, Wallpaper{
-			Name: file.Name(),
-			Path: path + "/" + file.Name(),
+			Name:    file.Name(),
+			Path:    path + "/" + file.Name(),
+			DataURL: "data:image/" + extension[1:] + ";base64," + base64Data,
 		})
 	}
 
