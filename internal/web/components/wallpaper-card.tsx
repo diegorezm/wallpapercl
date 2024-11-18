@@ -16,7 +16,7 @@ export const WallpaperCard = ({name, path, dataURL}: Wallpaper) => (
           dataURL
         })}
       >
-        Open
+        Apply
       </button>
     </div>
   </li>

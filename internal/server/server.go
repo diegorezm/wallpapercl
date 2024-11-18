@@ -55,6 +55,26 @@ func (s *server) Start() {
 			w.WriteHeader(http.StatusNoContent)
 		}
 	})
+
+	http.HandleFunc("/api/config", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			json.NewEncoder(w).Encode(s.Config)
+		case "POST":
+			type request struct {
+				Mode string `json:"mode"`
+			}
+			var req request
+			err := json.NewDecoder(r.Body).Decode(&req)
+			if err != nil {
+				json.NewEncoder(w).Encode(apiError{Error: err.Error()})
+			}
+			m := models.WallpaperMode(req.Mode)
+			s.Config.SetMode(m)
+			json.NewEncoder(w).Encode(s.Config)
+		}
+	})
+
 	port := ":8080"
 
 	log.Printf("Listening on %s", port)
