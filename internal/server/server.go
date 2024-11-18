@@ -12,6 +12,7 @@ import (
 type ServerOpts struct {
 	Config *models.Config
 	Dir    *models.Dir
+	Port   string
 }
 
 type server struct {
@@ -74,10 +75,15 @@ func (s *server) Start() {
 			json.NewEncoder(w).Encode(s.Config)
 		}
 	})
+	var port string
 
-	port := ":8080"
+	if s.Port == "" {
+		port = ":7272"
+	} else {
+		port = s.Port
+	}
 
-	log.Printf("Listening on %s", port)
+	log.Printf("Listening on http://localhost%s", port)
 
 	log.Fatal(http.ListenAndServe(port, nil))
 }

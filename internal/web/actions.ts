@@ -25,7 +25,7 @@ export async function fetchWallpapers() {
   }
   const data = await response.json() as response[];
   return data.map((d) => {
-    const url = `http://localhost:8080/images/${d.name}`;
+    const url = `${window.location.origin}/images/${d.name}`;
     return {
       name: d.name,
       path: d.path,

@@ -15,7 +15,9 @@ func main() {
 	var current bool
 	var changeDirectory bool
 	var serve bool
+	var port string
 
+	flag.StringVar(&port, "port", "", "Port to listen on")
 	flag.BoolVar(&serve, "serve", false, "Start the server")
 	flag.BoolVar(&current, "current", false, "Refresh the wallpapers")
 	flag.BoolVar(&changeDirectory, "change-directory", false, "Change the wallpaper directory")
@@ -49,6 +51,7 @@ func main() {
 		s := server.NewServer(&server.ServerOpts{
 			Config: &config,
 			Dir:    dir,
+			Port:   port,
 		})
 		s.Start()
 	}
