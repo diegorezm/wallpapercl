@@ -6,9 +6,8 @@ import (
 )
 
 type Wallpaper struct {
-	Name    string `json:"name"`
-	Path    string `json:"path"`
-	DataURL string `json:"data_url"`
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 type WallpaperMode string

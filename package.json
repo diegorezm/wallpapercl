@@ -3,15 +3,20 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "tailwind:dev": "tailwindcss -i ./input.css -o ./public/index.css --watch",
-    "tailwind:build": "tailwindcss -i ./input.css -o ./public/index.css --minify"
+    "build": "bun run build.ts"
   },
   "devDependencies": {
     "daisyui": "^4.12.14",
-    "tailwindcss": "^3.4.15"
+    "tailwindcss": "^3.4.15",
+    "@types/bun": "latest",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react": "^19.0.0-rc.1",
+    "react-dom": "^19.0.0-rc.1"
+  }
 }

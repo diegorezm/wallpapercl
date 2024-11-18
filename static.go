@@ -1,6 +1,13 @@
 package wallpapercl
 
-import "embed"
+import (
+	"embed"
+	"io/fs"
+)
 
-//go:embed public
-var StaticFiles embed.FS
+//go:embed dist/*
+var assets embed.FS
+
+func Assets() (fs.FS, error) {
+	return fs.Sub(assets, "dist")
+}

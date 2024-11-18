@@ -1,13 +1,10 @@
 HOME_DIR=$(shell echo $$HOME)
 CONFIG_PATH=$(HOME_DIR)/.config/wallpapercl
 
-views:
-	@templ generate
+bundle: 
+	@bun run build
 
-tailwind:
-	@npm run tailwind:build
-
-build: tailwind views 
+build: bundle 
 	@go build -o bin/wallpapercl cmd/wallpapercl/main.go
 	@echo "Build complete!"
 
