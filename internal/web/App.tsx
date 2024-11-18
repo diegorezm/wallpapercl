@@ -18,7 +18,6 @@ export default function App() {
   }, []);
 
   const onModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(e.target.value);
     setMode(e.target.value as WallpaperMode);
     changeMode(mode)
   };
@@ -26,7 +25,7 @@ export default function App() {
   const filteredWallpapers = wallpapers.filter((w) => w.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 px-4 gap-6">
+    <div className="flex flex-col justify-between py-2 px-4 gap-6">
 
       <div className="w-full flex flex-col items-start justify-start">
         <h1 className="text-2xl font-bold">Wallpaper CL</h1>
@@ -50,11 +49,15 @@ export default function App() {
             ? wallpapers.map((w) => (
               <WallpaperCard key={w.name} {...w} />
             ))
-            : filteredWallpapers.map((w) => (
-              <WallpaperCard key={w.name} {...w} />
-            ))
+            : filteredWallpapers.length === 0
+              ? <li className="text-center">No wallpapers found</li>
+              : filteredWallpapers.map((w) => (
+                <WallpaperCard key={w.name} {...w} />
+              ))
         }
       </ul>
+
+
     </div>
   );
 }

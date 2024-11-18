@@ -1,9 +1,9 @@
 import {applyWallpaper, type Wallpaper} from "../actions";
 
 export const WallpaperCard = ({name, path, dataURL}: Wallpaper) => (
-  <li className="card bg-base-200 shadow-lg h-96 w-96">
+  <li className="card bg-base-200 shadow-lg w-full">
     <figure>
-      <img src={dataURL} alt={name} className="w-full object-cover" />
+      <img src={dataURL} alt={name} className="w-full h-52 object-cover" />
     </figure>
     <div className="card-body">
       <h5 className="card-title truncate">{name}</h5>
