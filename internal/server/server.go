@@ -30,51 +30,53 @@ func NewServer(opts *ServerOpts) *server {
 }
 
 func (s *server) Start() {
+	mux := http.NewServeMux()
+
 	assets, err := wallpapercl.Assets()
 	if err != nil {
 		panic(err)
 	}
 
 	fs := http.FileServer(http.FS(assets))
-	http.Handle("/", http.StripPrefix("/", fs))
+
+	mux.Handle("/", http.StripPrefix("/", fs))
 
 	imageHandler := http.FileServer(http.Dir(s.Dir.Path))
-	http.Handle("/images/", http.StripPrefix("/images/", imageHandler))
+	mux.Handle("/images/", http.StripPrefix("/images/", imageHandler))
 
-	http.HandleFunc("/api/wallpapers", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case "GET":
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(s.Dir.Wallpapers)
-		case "POST":
-			var wallpaper models.Wallpaper
-			err := json.NewDecoder(r.Body).Decode(&wallpaper)
-			if err != nil {
-				json.NewEncoder(w).Encode(apiError{Error: err.Error()})
-			}
-			wallpaper.Apply(*s.Config.Mode)
-			w.WriteHeader(http.StatusNoContent)
-		}
+	mux.HandleFunc("GET /api/wallpapers", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(s.Dir.Wallpapers)
 	})
 
-	http.HandleFunc("/api/config", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case "GET":
-			json.NewEncoder(w).Encode(s.Config)
-		case "POST":
-			type request struct {
-				Mode string `json:"mode"`
-			}
-			var req request
-			err := json.NewDecoder(r.Body).Decode(&req)
-			if err != nil {
-				json.NewEncoder(w).Encode(apiError{Error: err.Error()})
-			}
-			m := models.WallpaperMode(req.Mode)
-			s.Config.SetMode(m)
-			json.NewEncoder(w).Encode(s.Config)
+	mux.HandleFunc("POST /api/wallpapers", func(w http.ResponseWriter, r *http.Request) {
+		var wallpaper models.Wallpaper
+		err := json.NewDecoder(r.Body).Decode(&wallpaper)
+		if err != nil {
+			json.NewEncoder(w).Encode(apiError{Error: err.Error()})
 		}
+		wallpaper.Apply(*s.Config.Mode)
+		w.WriteHeader(http.StatusNoContent)
 	})
+
+	mux.HandleFunc("GET /api/config", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(s.Config)
+	})
+
+	mux.HandleFunc("POST /api/config", func(w http.ResponseWriter, r *http.Request) {
+		type request struct {
+			Mode string `json:"mode"`
+		}
+		var req request
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			json.NewEncoder(w).Encode(apiError{Error: err.Error()})
+		}
+		m := models.WallpaperMode(req.Mode)
+		s.Config.SetMode(m)
+		json.NewEncoder(w).Encode(s.Config)
+	})
+
 	var port string
 
 	if s.Port == "" {
@@ -85,5 +87,5 @@ func (s *server) Start() {
 
 	log.Printf("Listening on http://localhost%s", port)
 
-	log.Fatal(http.ListenAndServe(port, nil))
+	log.Fatal(http.ListenAndServe(port, mux))
 }
