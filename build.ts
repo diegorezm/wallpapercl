@@ -1,20 +1,21 @@
-import {build, file, spawn} from "bun";
+import {build, spawn} from "bun";
 
 async function buildApp() {
-  console.log("Building React/TypeScript application...");
-  await build({
-    entrypoints: ["internal/web/_client.tsx"],
-    outdir: "dist",
+  // Bundle JavaScript using Bun
+  console.log("Bundling typescript...");
+  build({
+    entrypoints: ["./public/index.js"],
+    outdir: "./dist",
     minify: true,
     target: "browser",
-  });
+  }).then(() => {
+    console.log("Typescript bundled!")
+  }).catch(e => {
+    console.error(e)
+  })
 
-  console.log("Copying index.html...");
-  const input = file("./public/index.html");
-  const output = file("./dist/index.html");
-  await Bun.write(output, input);
+  console.log("Bundling tailwind...")
 
-  console.log("Building Tailwind CSS...");
   spawn([
     "bunx",
     "tailwindcss",
@@ -24,8 +25,6 @@ async function buildApp() {
     "./dist/styles.css",
     "--minify",
   ]);
-  console.log("Build completed!");
 }
 
 await buildApp();
-

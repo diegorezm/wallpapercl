@@ -14,4 +14,8 @@ install: build
 run: build
 	@./bin/wallpapercl
 
+server: build
+	@./bin/wallpapercl --serve
+
+
 .PHONY: build install run

@@ -2,7 +2,10 @@ import daisyui from 'daisyui';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["internal/web/**/*.tsx", "public/**/*.html"],
+  content: [
+    "./internal/server/views/*.html",
+    "./public/*.{html,ts}"
+  ],
   theme: {
     extend: {},
   },
@@ -14,6 +17,7 @@ export default {
       'light',
       'dark',
       'night',
+      'black'
     ],
   },
 }

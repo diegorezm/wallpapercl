@@ -1,9 +1,12 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/diegorezm/wallpapercl"
 	"github.com/diegorezm/wallpapercl/internal/models"
@@ -30,19 +33,19 @@ func NewServer(opts *ServerOpts) *server {
 }
 
 func (s *server) Start() {
+	t := NewTemplateManager()
 	mux := http.NewServeMux()
 
-	assets, err := wallpapercl.Assets()
-	if err != nil {
-		panic(err)
-	}
-
-	fs := http.FileServer(http.FS(assets))
-
-	mux.Handle("/", http.StripPrefix("/", fs))
-
 	imageHandler := http.FileServer(http.Dir(s.Dir.Path))
-	mux.Handle("/images/", http.StripPrefix("/images/", imageHandler))
+	mux.Handle("GET /images/", http.StripPrefix("/images/", imageHandler))
+
+	mux.HandleFunc("GET /static/", serveStatic)
+
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Contet-Type", "text/html")
+		ctx := context.Background()
+		t.Render(w, "index.html", nil, ctx)
+	})
 
 	mux.HandleFunc("GET /api/wallpapers", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -88,4 +91,70 @@ func (s *server) Start() {
 	log.Printf("Listening on http://localhost%s", port)
 
 	log.Fatal(http.ListenAndServe(port, mux))
+}
+
+func getContentType(filePath string) string {
+	ext := strings.ToLower(filepath.Ext(filePath))
+	switch ext {
+	case ".js":
+		return "application/javascript"
+	case ".css":
+		return "text/css"
+	case ".html":
+		return "text/html"
+	case ".json":
+		return "application/json"
+	case ".jpg", ".jpeg":
+		return "image/jpeg"
+	case ".png":
+		return "image/png"
+	case ".gif":
+		return "image/gif"
+	case ".svg":
+		return "image/svg+xml"
+	default:
+		return "application/octet-stream"
+	}
+}
+
+func serveStatic(w http.ResponseWriter, r *http.Request) {
+	assets, err := wallpapercl.Assets()
+
+	if err != nil {
+		panic(err)
+	}
+
+	requestPath := r.URL.Path
+
+	filePath := strings.Replace(requestPath, "/static/", "", 1)
+
+	contentType := getContentType(filePath)
+
+	file, err := assets.Open(filePath)
+
+	if err != nil {
+		http.Error(w, "File does not exist.", 404)
+		return
+	}
+
+	defer file.Close()
+
+	fileInfo, err := file.Stat()
+
+	if err != nil {
+		http.Error(w, "Unable to get file information.", 500)
+		return
+	}
+
+	bytes := make([]byte, fileInfo.Size())
+
+	_, err = file.Read(bytes)
+
+	if err != nil {
+		log.Printf("Error: %v", err)
+		http.Error(w, "Something went wrong.", 500)
+		return
+	}
+	w.Header().Set("Content-Type", contentType)
+	w.Write(bytes)
 }
