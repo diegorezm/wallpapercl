@@ -3,7 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "bun run build.ts"
+    "tailwind:dev": "tailwindcss -i input.css -o ./public/styles.css --watch",
+    "tailwind:build": "tailwindcss -i input.css -o ./public/styles.css"
   },
   "devDependencies": {
     "@types/bun": "latest",

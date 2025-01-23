@@ -2,7 +2,7 @@ HOME_DIR=$(shell echo $$HOME)
 CONFIG_PATH=$(HOME_DIR)/.config/wallpapercl
 
 bundle: 
-	@bun run build
+	@bun run tailwind:build
 
 build: bundle 
 	@go build -o bin/wallpapercl cmd/wallpapercl/main.go
