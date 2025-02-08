@@ -283,7 +283,7 @@ impl App {
             .filter_map(|(original_idx, wallpaper)| {
                 if self.search_query.is_empty() || wallpaper.file_name.contains(&self.search_query)
                 {
-                    filtered_indices.push(original_idx); // Store the original index
+                    filtered_indices.push(original_idx);
                     Some(wallpaper)
                 } else {
                     None
