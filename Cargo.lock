@@ -63,12 +63,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
-name = "base64"
-version = "0.22.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
-
-[[package]]
 name = "bitflags"
 version = "2.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -155,6 +149,10 @@ dependencies = [
  "ryu",
  "static_assertions",
 ]
+
+[[package]]
+name = "config"
+version = "0.1.0"
 
 [[package]]
 name = "constant_time_eq"
@@ -569,7 +567,7 @@ version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4b18820d944b33caa75a71378964ac46f58517c92b6ae5f762636247c09e78fb"
 dependencies = [
- "base64 0.13.1",
+ "base64",
  "blake2b_simd",
  "constant_time_eq",
  "crossbeam-utils",
@@ -786,6 +784,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "tui"
+version = "0.1.0"
+dependencies = [
+ "color-eyre",
+ "config",
+ "crossterm",
+ "ratatui",
+ "wallpaper",
+ "wallpaper_control",
+]
+
+[[package]]
 name = "unicode-ident"
 version = "1.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -840,13 +850,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "wallpapercl"
+name = "wallpaper_control"
 version = "0.1.0"
 dependencies = [
- "base64 0.22.1",
- "color-eyre",
- "crossterm",
- "ratatui",
  "wallpaper",
 ]
 

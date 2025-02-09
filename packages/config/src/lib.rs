@@ -1,3 +1,4 @@
+// This module holds the code for the configuration of this app
 use std::{
     env,
     fs::{self, File},

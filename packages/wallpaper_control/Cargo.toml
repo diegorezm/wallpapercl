@@ -1,0 +1,11 @@
+[package]
+name = "wallpaper_control"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wallpaper = "3.2.0"
+
+[lib]
+name = "wallpaper_control"
+path = "src/lib.rs"
