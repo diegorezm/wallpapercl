@@ -1,4 +1,4 @@
-use std::{path::Path, usize};
+use std::{path::Path, process::Command, usize};
 
 use color_eyre::Result;
 use ratatui::{
@@ -158,8 +158,21 @@ impl App {
                 KeyCode::Char('/') => self.input_focused = true,
                 KeyCode::Char(' ') => self.change_bg(),
                 KeyCode::Char('c') => self.clean_search(),
+                KeyCode::Char('o') => self.open_file(),
                 KeyCode::Char('d') => self.dir_input_focused = true,
                 _ => {}
+            }
+        }
+    }
+
+    fn open_file(&mut self) {
+        if let Some(filtered_index) = self.wallpaper_state.selected() {
+            if let Some(real_index) = self.filtered_indices.get(filtered_index) {
+                let wallpaper = &self.wallpaper_dir.dir_files[*real_index];
+                let wallpaper_path = wallpaper.file_path.to_str();
+                if let Err(e) = Command::new("sxiv").args(wallpaper_path).spawn() {
+                    self.global_error = Some(e.to_string());
+                }
             }
         }
     }
@@ -350,9 +363,9 @@ impl App {
                 "SPACE: Change wallpaper",
                 "/: search",
                 "c: clean search",
+                "o: open file",
                 "d: change directory",
                 "m: change wallpaper mode",
-                "Vim keys: Navigate list",
             ]
         };
 
