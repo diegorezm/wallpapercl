@@ -6,17 +6,16 @@ use std::path::Path;
 use std::process::Command;
 
 use colors::{
-    BACKGROUND_COLOR, CARD_BACKGROUND, FOREGROUND_COLOR, PRIMARY_COLOR, RED_COLOR, SELECTED_STYLE,
-    SUBTEXT_COLOR,
+    BACKGROUND_COLOR, FOREGROUND_COLOR, PRIMARY_COLOR, RED_COLOR, SELECTED_STYLE, SUBTEXT_COLOR,
 };
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::buffer::Buffer;
-use ratatui::layout::{Constraint, Layout, Position, Rect};
+use ratatui::layout::{Constraint, Flex, Layout, Position, Rect};
 use ratatui::prelude::{Stylize, Widget};
 use ratatui::style::Style;
-use ratatui::text::Line;
+use ratatui::text::{Line, Span};
 use ratatui::widgets::{
-    Block, Borders, HighlightSpacing, List, ListItem, Paragraph, StatefulWidget,
+    Block, Borders, Clear, HighlightSpacing, List, ListItem, Paragraph, StatefulWidget, Wrap,
 };
 use ratatui::{DefaultTerminal, Frame};
 use state::app_state::{ErrorState, WallpaperState};
@@ -25,6 +24,16 @@ use wallpaper_control::Dir;
 
 use color_eyre::Result;
 
+const SEARCH_HELP: &[&str] = &["ESC: Get out of search"];
+const CHANGE_DIRECTORY_HELP: &[&str] = &["ESC: Get out", "ENTER: Submit"];
+const APP_HELP: &[&str] = &[
+    "ESC/Q: Quit",
+    "SPACE: Change wallpaper",
+    "/: search",
+    "o: open file",
+    "?: help popup",
+];
+
 struct App {
     should_exit: bool,
     wallpaper_state: WallpaperState,
@@ -32,6 +41,7 @@ struct App {
     change_directory_state: ChangeDirectoryState,
     search_state: SearchState,
     cfg: config::Config,
+    display_help_popup: bool,
 }
 
 impl App {
@@ -56,6 +66,7 @@ impl App {
             search_state,
             cfg,
             should_exit: false,
+            display_help_popup: false,
         }
     }
 
@@ -63,9 +74,9 @@ impl App {
         while !self.should_exit {
             terminal.draw(|frame| {
                 let vertical_layout = Layout::vertical([
-                    Constraint::Percentage(8),
-                    Constraint::Percentage(88),
-                    Constraint::Percentage(4),
+                    Constraint::Length(3),
+                    Constraint::Min(1),
+                    Constraint::Length(1),
                 ])
                 .horizontal_margin(2);
                 let [input_area, list_area, help_area] = vertical_layout.areas(frame.area());
@@ -78,7 +89,9 @@ impl App {
 
                 self.render_search_input(input_area, frame);
                 self.render_wallpaper_list(list_area, frame.buffer_mut());
+
                 self.render_help_menu(help_area, frame.buffer_mut());
+                self.render_help_menu_popup(frame);
                 self.render_error_popup(frame);
             })?;
 
@@ -133,6 +146,11 @@ impl App {
                 KeyCode::Right => self.search_state.move_cursor_right(),
                 _ => {}
             }
+        } else if self.display_help_popup {
+            match key.code {
+                KeyCode::Esc | KeyCode::Char('q') => self.display_help_popup = false,
+                _ => {}
+            }
         } else {
             match key.code {
                 KeyCode::Char('q') | KeyCode::Esc => self.should_exit = true,
@@ -152,6 +170,7 @@ impl App {
                 KeyCode::Char('c') => self.search_state.clean_input(),
                 KeyCode::Char('d') => self.change_directory_state.is_input_focused = true,
                 KeyCode::Char('o') => self.open_file(),
+                KeyCode::Char('?') => self.display_help_popup = true,
                 _ => {}
             }
         }
@@ -262,17 +281,11 @@ impl App {
 
     fn render_help_menu(&self, area: Rect, buf: &mut Buffer) {
         let help_text = if self.search_state.is_input_focused {
-            vec!["ESC: Get out of search"]
+            SEARCH_HELP
+        } else if self.change_directory_state.is_input_focused {
+            CHANGE_DIRECTORY_HELP
         } else {
-            vec![
-                "ESC/Q: Quit",
-                "SPACE: Change wallpaper",
-                "/: search",
-                "c: clean search",
-                "o: open file",
-                "d: change directory",
-                "m: change wallpaper mode",
-            ]
+            APP_HELP
         };
 
         let block = Block::new().bg(BACKGROUND_COLOR);
@@ -310,15 +323,71 @@ impl App {
         ));
     }
 
+    fn render_help_menu_popup(&self, frame: &mut Frame) {
+        // this code was written by chatgpt
+        // i have no idea how it works
+        // but it should split the help into columns, for now it works
+        if self.display_help_popup {
+            let area = App::popup_area(frame.area(), 50, 20);
+            let chunk_size = 8; // rows per col
+
+            let help_text: Vec<&str> = vec![
+                "ESC/Q: Quit",
+                "SPACE: Change wallpaper",
+                "/: search",
+                "c: clean search",
+                "o: open file",
+                "d: change directory",
+                "m: change wallpaper mode (not implemented)",
+                "h/j/k/l: Move around",
+            ];
+
+            let columns: Vec<&[&str]> = help_text.chunks(chunk_size).collect();
+
+            // Determine max rows (for proper alignment)
+            let max_rows = columns.iter().map(|col| col.len()).max().unwrap_or(0);
+
+            // Construct a list of `Line`, formatting columns properly
+            let mut formatted_lines: Vec<Line> = Vec::new();
+
+            for row in 0..max_rows {
+                let mut spans = Vec::new();
+
+                for col in &columns {
+                    // Ensure we don't access out of bounds
+                    let text = col.get(row).unwrap_or(&"");
+                    spans.push(Span::raw(format!("{:<30}", text))); // Align text
+                }
+
+                formatted_lines.push(Line::from(spans));
+            }
+
+            // Create a single Paragraph with one Block
+            let paragraph = Paragraph::new(formatted_lines)
+                .block(
+                    Block::default()
+                        .borders(Borders::ALL)
+                        .border_type(ratatui::widgets::BorderType::Rounded)
+                        .title("Help"),
+                )
+                .style(Style::default().fg(FOREGROUND_COLOR))
+                .wrap(Wrap { trim: false });
+
+            frame.render_widget(Clear, frame.area());
+
+            frame.render_widget(paragraph, area);
+        }
+    }
+
     fn render_error_popup(&self, frame: &mut Frame) {
         if let Some(ref error_message) = self.error_state.message {
-            let area = self.centered_rect(60, 20, frame.area());
-
+            // frame.render_widget(Clear, frame.area());
+            let area = App::popup_area(frame.area(), 50, 15);
             let block = Block::new()
                 .title("Error")
                 .borders(Borders::ALL)
                 .border_type(ratatui::widgets::BorderType::Rounded)
-                .style(Style::default().fg(RED_COLOR).bg(CARD_BACKGROUND));
+                .style(Style::default().fg(RED_COLOR));
 
             let paragraph = Paragraph::new(vec![
                 Line::from(error_message.clone()).fg(RED_COLOR),
@@ -328,28 +397,17 @@ impl App {
             .alignment(ratatui::layout::Alignment::Center)
             .block(block);
 
+            frame.render_widget(Clear, frame.area());
             frame.render_widget(paragraph, area);
         }
     }
 
-    fn centered_rect(&self, percent_x: u16, percent_y: u16, r: Rect) -> Rect {
-        let popup_layout = Layout::default()
-            .direction(ratatui::layout::Direction::Vertical)
-            .constraints([
-                Constraint::Percentage((100 - percent_y) / 2),
-                Constraint::Percentage(percent_y),
-                Constraint::Percentage((100 - percent_y) / 2),
-            ])
-            .split(r);
-
-        Layout::default()
-            .direction(ratatui::layout::Direction::Horizontal)
-            .constraints([
-                Constraint::Percentage((100 - percent_x) / 2),
-                Constraint::Percentage(percent_x),
-                Constraint::Percentage((100 - percent_x) / 2),
-            ])
-            .split(popup_layout[1])[1]
+    fn popup_area(area: Rect, percent_x: u16, percent_y: u16) -> Rect {
+        let vertical = Layout::vertical([Constraint::Percentage(percent_y)]).flex(Flex::Center);
+        let horizontal = Layout::horizontal([Constraint::Percentage(percent_x)]).flex(Flex::Center);
+        let [area] = vertical.areas(area);
+        let [area] = horizontal.areas(area);
+        area
     }
 }
 
