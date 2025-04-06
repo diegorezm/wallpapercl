@@ -1,13 +1,13 @@
-mod colors;
 mod state;
+mod theme;
+mod xresources;
 
 use std::env;
 use std::path::Path;
 use std::process::Command;
 
-use colors::{
-    BACKGROUND_COLOR, FOREGROUND_COLOR, PRIMARY_COLOR, RED_COLOR, SELECTED_STYLE, SUBTEXT_COLOR,
-};
+use theme::Theme;
+
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Constraint, Flex, Layout, Position, Rect};
@@ -42,6 +42,7 @@ struct App {
     search_state: SearchState,
     cfg: config::Config,
     display_help_popup: bool,
+    theme: Theme,
 }
 
 impl App {
@@ -58,6 +59,7 @@ impl App {
         let change_directory_state =
             ChangeDirectoryState::new(Some(cfg.stored_wallpaper_path.clone()));
         let search_state = SearchState::new();
+        let theme = Theme::new();
 
         Self {
             wallpaper_state,
@@ -67,6 +69,7 @@ impl App {
             cfg,
             should_exit: false,
             display_help_popup: false,
+            theme,
         }
     }
 
@@ -207,10 +210,14 @@ impl App {
             .title("Search")
             .borders(Borders::ALL)
             .border_type(ratatui::widgets::BorderType::Rounded)
-            .bg(BACKGROUND_COLOR);
+            .bg(self.theme.background);
 
         let input = Paragraph::new(self.search_state.input.clone())
-            .style(Style::default().fg(FOREGROUND_COLOR).bg(BACKGROUND_COLOR))
+            .style(
+                Style::default()
+                    .fg(self.theme.foreground)
+                    .bg(self.theme.background),
+            )
             .block(block);
 
         input.render(area, frame.buffer_mut());
@@ -228,7 +235,7 @@ impl App {
             .title(Line::raw("Wallpapers").centered())
             .borders(Borders::ALL)
             .border_type(ratatui::widgets::BorderType::Rounded)
-            .bg(BACKGROUND_COLOR);
+            .bg(self.theme.background);
 
         let mut filtered_indices: Vec<usize> = Vec::new();
 
@@ -257,22 +264,22 @@ impl App {
             .enumerate()
             .map(|(i, wallpaper)| {
                 let fg_color = if Some(i) == self.wallpaper_state.list_state.selected() {
-                    PRIMARY_COLOR
+                    self.theme.primary
                 } else {
-                    FOREGROUND_COLOR
+                    self.theme.foreground
                 };
 
                 let paragraph = format!("{}: {}", i, wallpaper.file_name);
 
                 ListItem::new(Line::raw(paragraph))
-                    .bg(BACKGROUND_COLOR)
+                    .bg(self.theme.background)
                     .fg(fg_color)
             })
             .collect();
 
         let list = List::new(items)
             .block(block)
-            .highlight_style(SELECTED_STYLE)
+            .highlight_style(self.theme.selected_style)
             .highlight_symbol(">")
             .highlight_spacing(HighlightSpacing::Always);
 
@@ -288,10 +295,14 @@ impl App {
             APP_HELP
         };
 
-        let block = Block::new().bg(BACKGROUND_COLOR);
+        let block = Block::new().bg(self.theme.background);
 
         let paragraph = Paragraph::new(help_text.join(" | "))
-            .style(Style::default().fg(SUBTEXT_COLOR).bg(BACKGROUND_COLOR))
+            .style(
+                Style::default()
+                    .fg(self.theme.subtext)
+                    .bg(self.theme.background),
+            )
             .block(block);
 
         paragraph.render(area, buf);
@@ -309,12 +320,12 @@ impl App {
             .title(" Set Wallpaper Directory ")
             .borders(Borders::ALL)
             .border_type(ratatui::widgets::BorderType::Rounded)
-            .bg(BACKGROUND_COLOR);
+            .bg(self.theme.background);
 
         let text = format!("Path: {}", self.change_directory_state.input);
         let paragraph = Paragraph::new(text)
             .block(block)
-            .style(Style::default().fg(FOREGROUND_COLOR));
+            .style(Style::default().fg(self.theme.foreground));
 
         paragraph.render(popup_area, frame.buffer_mut());
         frame.set_cursor_position(Position::new(
@@ -370,7 +381,7 @@ impl App {
                         .border_type(ratatui::widgets::BorderType::Rounded)
                         .title("Help"),
                 )
-                .style(Style::default().fg(FOREGROUND_COLOR))
+                .style(Style::default().fg(self.theme.foreground))
                 .wrap(Wrap { trim: false });
 
             frame.render_widget(Clear, frame.area());
@@ -387,12 +398,14 @@ impl App {
                 .title("Error")
                 .borders(Borders::ALL)
                 .border_type(ratatui::widgets::BorderType::Rounded)
-                .style(Style::default().fg(RED_COLOR));
+                .style(Style::default().fg(self.theme.red));
 
             let paragraph = Paragraph::new(vec![
-                Line::from(error_message.clone()).fg(RED_COLOR),
+                Line::from(error_message.clone()).fg(self.theme.red),
                 Line::from(" "),
-                Line::from("Press ESC to close").fg(SUBTEXT_COLOR).italic(),
+                Line::from("Press ESC to close")
+                    .fg(self.theme.subtext)
+                    .italic(),
             ])
             .alignment(ratatui::layout::Alignment::Center)
             .block(block);
