@@ -12,5 +12,5 @@ wallpaper_control = {path = "../../packages/wallpaper_control"}
 config = {path = "../../packages/config"}
 
 [[bin]]
-name = "wallpapercl"
+name = "wallpapercl_tui"
 path = "src/main.rs"
